@@ -1,0 +1,8 @@
+interface:
+  display_name: "Secure Software by Design"
+  short_description: "Design and verify defensive software controls"
+  default_prompt: "Use $secure-software-by-design to verify the changed trust boundaries and report remaining risks."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+policy:
+  allow_implicit_invocation: true

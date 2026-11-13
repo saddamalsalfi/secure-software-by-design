@@ -1,0 +1,9 @@
+# Release and verification requirements
+
+## Implement and verify
+MUST trace untrusted input to sensitive sinks, implement server-side controls, preserve intended behavior, and explain changed contracts. Use current official version-specific guidance; record uncertainty. Add negative tests for applicable wrong-user/role/tenant, protected fields, malformed inputs, replay, concurrency, and failure paths. Verify no unauthorized side effects and that valid flows succeed. Inspect alternate paths and rerun affected checks after fixes. Run available static, secret, dependency, configuration, and runtime checks proportionally; never interpret clean tooling as proof of security.
+
+For changed repositories, run a scoped secret check before reporting when tooling is available. Before introducing public dependencies, review exact registry identity and provenance using approved tools. See [verification tools](verification-tools.md) for helper scope and exit codes. Neither helper executes project code or installs dependencies. Errors/incomplete coverage MUST be reported; never convert unknown to passed. Scanner output is evidence for review, not automatic security judgment.
+
+## Release gates
+MUST verify high-risk boundary controls and negative tests; resolve confirmed P0/P1 or report affected functionality blocked. P0 = immediate severe exposure; P1 = high-impact exploitable weakness; P2 = constrained meaningful risk; P3 = low-impact improvement. Judge exposure and prerequisites, not labels. No new secrets, debug exposure, unchecked privileged fields, or cross-tenant paths. Verify privacy/deletion claims and distinguish deployed evidence from configuration review. Record actual tests, unavailable checks, residual risk, and owner-approved exceptions with expiry. Identify maintenance, monitoring, and recovery needs without automatically deploying or scheduling. Log-only controls remain unenforced. Continue independent safe work when blocked.
