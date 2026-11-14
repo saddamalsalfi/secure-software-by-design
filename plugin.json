@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "secure-software-by-design",
+  "version": "1.1.0",
+  "description": "Design, implement, review, or remediate defensive software controls. Use for threat modeling, security-sensitive changes, or release verification involving authorization, tenancy, APIs, data handling, dependencies, CI/CD, native code, or AI tools.",
+  "author": {
+    "name": "Saddam Al-Slfi"
+  },
+  "repository": "https://github.com/saddamalsalfi/secure-software-by-design",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "defensive-security",
+    "secure-by-design",
+    "threat-modeling",
+    "mcp"
+  ]
+}

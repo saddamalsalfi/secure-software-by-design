@@ -1,4 +1,5 @@
 """Offline checks for the release layout and its packaged links."""
+import json
 from pathlib import Path
 import re
 import unittest
@@ -28,7 +29,7 @@ class PackageLayoutTests(unittest.TestCase):
         self.assertTrue(any(line.strip() for line in lines[end+1:]))
 
     def test_local_links(self):
-        docs = [*ROOT.glob('README*.md'), *SKILL.rglob('*.md')]
+        docs = [*ROOT.glob('README*.md'), *(ROOT / 'docs').glob('*.md'), *SKILL.rglob('*.md')]
         self.assertGreater(len(docs), 3)
         for doc in docs:
             for link in LINK.findall(doc.read_text(encoding='utf-8')):
@@ -59,3 +60,28 @@ class PackageLayoutTests(unittest.TestCase):
         for script in ('scan_diff_secrets.py', 'verify_packages.py'):
             with self.subTest(script=script):
                 self.assertTrue((SKILL / 'scripts' / script).is_file())
+
+
+    def test_mcp_identity_and_distribution(self):
+        cfg = json.loads((ROOT / 'mcp.json').read_text(encoding='utf-8'))
+        registry = json.loads((ROOT / 'server.json').read_text(encoding='utf-8'))
+        plugin = json.loads((ROOT / 'plugin.json').read_text(encoding='utf-8'))
+        publisher = 'saddamalsalfi'
+        name = f'io.github.{publisher}/{SKILL.name}'
+        self.assertEqual(plugin['name'], SKILL.name)
+        self.assertEqual(plugin['version'], registry['version'])
+        self.assertEqual(registry['name'], name)
+        self.assertEqual(len(registry['packages']), 1)
+        pkg = registry['packages'][0]
+        self.assertEqual(pkg['registryType'], 'oci')
+        self.assertEqual(pkg['transport'], {'type': 'stdio'})
+        self.assertEqual(pkg['identifier'], f"ghcr.io/{publisher}/{SKILL.name}:{registry['version']}")
+        self.assertEqual(set(cfg['mcpServers']), {SKILL.name})
+        launch = cfg['mcpServers'][SKILL.name]
+        self.assertEqual(launch['type'], 'stdio')
+        self.assertIn('--locked', launch['args'])
+        self.assertIn('\x24{PLUGIN_ROOT}/server.py', launch['args'])
+        docker = (ROOT / 'Dockerfile').read_text(encoding='utf-8')
+        self.assertIn(f'io.modelcontextprotocol.server.name="{name}"', docker)
+        self.assertIn(f"org.opencontainers.image.version=\x22{registry['version']}\x22", docker)
+        self.assertIn('USER 10001:10001', docker)

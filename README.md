@@ -25,7 +25,11 @@ New-Item -ItemType Directory -Force -Path '.agents/skills' | Out-Null
 Copy-Item -LiteralPath $skill -Destination '.agents/skills/' -Recurse
 ```
 
-Use a fresh destination, or replace a previously installed copy after reviewing your local changes. This skill needs no plugin, MCP server, or Docker. The optional helpers use Python 3.10+; the diff helper also uses Git, and the registry checker uses HTTPS for reviewed public package names only.
+Use a fresh destination, or replace a previously installed copy after reviewing your local changes. Native skill discovery does not require MCP or Docker. The optional helpers use Python 3.10+; the diff helper also uses Git, and the registry checker uses HTTPS for reviewed public package names only.
+
+## MCP and Docker
+
+The optional read-only MCP server exposes the bundled guidance over stdio or Streamable HTTP. Use `list_guidelines` to browse topics and `get_guidelines` to read one. The server does not inspect a target repository or run the native verification scripts. See the [MCP and Docker guide](docs/distribution.md) for local setup, client configuration, and OCI distribution.
 
 ## Try it
 
@@ -45,8 +49,10 @@ skills/secure-software-by-design/
   references/    # Focused defensive guidance and tool documentation
   examples/      # Fictional sample report
   scripts/       # Diff scanner and public registry metadata checker
-tests/           # Offline release tests, not part of the installed skill
-.github/         # Windows/Linux validation workflow
+tests/           # Packaging, helper, and optional MCP integration tests
+.github/         # Skill and MCP/Docker validation workflows
+server.py        # Read-only MCP adapter
+Dockerfile       # Build the optional MCP container
 ```
 
 ## Validate locally
@@ -58,3 +64,5 @@ python -B -m unittest discover -s tests -v
 ```
 
 The tests cover the packaged structure and local links, defensive helper behavior, synthetic Git diffs, and mocked registry responses. Passing tests do not demonstrate live registry access, integration with every agent runtime, or the security of a target application.
+
+To exercise the MCP and Docker integration tests, follow the [verification steps](docs/distribution.md#verify-or-update).
